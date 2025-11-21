@@ -83,9 +83,20 @@ class TaskCubit extends Cubit<AppState>{
   ) async{
     emit(TasksLoadingState());
     await mDb.rawUpdate(
-        'UPDATE tasks SET status = ? WHERE id = $taskId', [status]).then(
+        'UPDATE tasks SET status = ? WHERE id = ?', [status, taskId]).then(
         (_){
           emit(UpdateTaskState());
+          getTasks(mDb);
+        }
+    );
+  }
+
+  deleteTask(int taskId) async{
+    emit(TasksLoadingState());
+    await mDb.rawDelete(
+        'DELETE FROM tasks WHERE id = ?', [taskId]).then(
+            (_){
+          emit(DeleteTaskState());
           getTasks(mDb);
         }
     );
@@ -107,7 +118,6 @@ class TaskCubit extends Cubit<AppState>{
          }
        }
        emit(GetTasksState());
-       print(tasks);
      });
   }
 }
